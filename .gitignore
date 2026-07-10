@@ -1,0 +1,32 @@
+# Build and dist outputs
+/build/
+/dist/
+
+# Node.js dependencies
+/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnp
+.pnp.js
+
+# Rust outputs
+/target/
+**/target/
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# OS
+.DS_Store
+._*
+
+# Test results
+/test-results/
+/playwright-report/

@@ -1,0 +1,11 @@
+[package]
+name = "__PACKAGE_NAME__-home"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "__CRATE_NAME___home"
+crate-type = ["cdylib"]
+
+[dependencies]
+fui-rs = { workspace = true }

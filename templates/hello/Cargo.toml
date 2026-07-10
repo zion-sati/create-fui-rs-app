@@ -1,0 +1,17 @@
+[package]
+name = "__PACKAGE_NAME__"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "__CRATE_NAME__"
+crate-type = ["cdylib"]
+
+[dependencies]
+fui-rs = "0.1.1"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+panic = "abort"

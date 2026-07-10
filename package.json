@@ -1,0 +1,44 @@
+{
+  "name": "@effindomv2/create-fui-rs-app",
+  "version": "0.1.1",
+  "private": false,
+  "license": "MIT",
+  "description": "Scaffold a minimal EffinDom v2 FUI-RS app",
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "bin": {
+    "create-fui-rs-app": "./dist/src/cli.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/src/scaffold.d.ts",
+      "default": "./dist/src/scaffold.js"
+    }
+  },
+  "main": "./dist/src/scaffold.js",
+  "types": "./dist/src/scaffold.d.ts",
+  "files": [
+    "dist",
+    "templates"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "lint": "bash -lc 'if [ -x node_modules/.bin/eslint ]; then node --experimental-strip-types ./node_modules/eslint/bin/eslint.js --config eslint.config.ts --max-warnings=0 \"src/**/*.ts\" \"tests/**/*.ts\"; elif [ -x ../../node_modules/.bin/eslint ]; then node --experimental-strip-types ../../node_modules/eslint/bin/eslint.js --config eslint.config.ts --max-warnings=0 \"src/**/*.ts\" \"tests/**/*.ts\"; else echo \"Could not locate eslint in node_modules/.bin.\" >&2; exit 1; fi'",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "npm run build && node --test dist/tests/**/*.test.js",
+    "publish:local": "bash -c 'if [ -f scripts/publish/local/create-fui-rs-app.sh ]; then bash scripts/publish/local/create-fui-rs-app.sh; elif [ -f ../../scripts/publish/local/create-fui-rs-app.sh ]; then bash ../../scripts/publish/local/create-fui-rs-app.sh; else echo \"Missing create-fui-rs-app publish:local script\" >&2; exit 1; fi'",
+    "publish:npm": "bash -c 'if [ -f scripts/publish/npm/create-fui-rs-app.sh ]; then bash scripts/publish/npm/create-fui-rs-app.sh; elif [ -f ../../scripts/publish/npm/create-fui-rs-app.sh ]; then bash ../../scripts/publish/npm/create-fui-rs-app.sh; else echo \"Missing create-fui-rs-app publish:npm script\" >&2; exit 1; fi'",
+    "prepack": "npm run build",
+    "prepublishOnly": "npm run lint && npm run typecheck"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^24.10.1",
+    "eslint": "^10.3.0",
+    "jiti": "^2.7.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.59.2"
+  }
+}

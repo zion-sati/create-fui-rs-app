@@ -1,0 +1,29 @@
+{
+  "name": "__PACKAGE_NAME__",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Scaffolded FUI-RS hello-world app",
+  "scripts": {
+    "build": "npm run build:assets && npm run build:wasm && npm run build:harness",
+    "build:assets": "tsx scripts/prepare-runtime.ts",
+    "build:wasm": "tsx scripts/build-wasm.ts",
+    "build:harness": "esbuild harness.ts --bundle --format=esm --platform=browser --outfile=public/harness.js",
+    "check": "cargo check",
+    "serve": "serve public --listen 8080",
+    "dev": "npm run build && npm run serve",
+    "test": "npm run build && tsx scripts/smoke.ts"
+  },
+  "dependencies": {
+    "@effindomv2/runtime": "0.1.22"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.1",
+    "serve": "^14.2.5",
+    "tsx": "^4.20.6"
+  },
+  "allowScripts": {
+    "esbuild@0.28.1": true,
+    "fsevents@2.3.3": true
+  }
+}

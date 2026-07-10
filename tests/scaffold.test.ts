@@ -1,0 +1,71 @@
+import assert from 'node:assert/strict';
+import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import test from 'node:test';
+import { createProject } from '../src/scaffold.js';
+
+function readJson(path: string): unknown {
+  return JSON.parse(readFileSync(path, 'utf8')) as unknown;
+}
+
+void test('createProject writes hello scaffold without manual lifecycle exports', () => {
+  const root = mkdtempSync(join(tmpdir(), 'create-fui-rs-app-'));
+  const target = join(root, 'my-rust-app');
+  try {
+    createProject({ targetDirectory: target, projectName: 'my-rust-app' });
+    const cargo = readFileSync(join(target, 'Cargo.toml'), 'utf8');
+    const source = readFileSync(join(target, 'src', 'lib.rs'), 'utf8');
+    const packageJson = readJson(join(target, 'package.json')) as {
+      scripts: Record<string, string>;
+      devDependencies: Record<string, string>;
+      allowScripts: Record<string, boolean>;
+    };
+    assert.equal(cargo.includes('crate-type = ["cdylib"]'), true);
+    assert.equal(source.includes('fui_app!(FlexBox, build_page);'), true);
+    assert.equal(source.includes('#[no_mangle]'), false);
+    assert.equal(source.includes('extern "C" fn __runApp'), false);
+    assert.equal(typeof packageJson.scripts.build, 'string');
+    assert.equal(packageJson.scripts['build:wasm'], 'tsx scripts/build-wasm.ts');
+    assert.equal(packageJson.devDependencies.esbuild, '0.28.1');
+    assert.equal(packageJson.allowScripts['esbuild@0.28.1'], true);
+    assert.equal(existsSync(join(target, 'scripts', 'build-wasm.ts')), true);
+    assert.equal(existsSync(join(target, '.gitignore')), true);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+void test('createProject writes routed mvc scaffold with separate route wasm crates', () => {
+  const root = mkdtempSync(join(tmpdir(), 'create-fui-rs-app-'));
+  const target = join(root, 'my-routed-app');
+  try {
+    createProject({ targetDirectory: target, projectName: 'my-routed-app', template: 'mvc' });
+    const workspace = readFileSync(join(target, 'Cargo.toml'), 'utf8');
+    const routes = readJson(join(target, 'routes.json')) as { routes: { wasmPath: string }[] };
+    const home = readFileSync(join(target, 'crates', 'home', 'src', 'lib.rs'), 'utf8');
+    const settings = readFileSync(join(target, 'crates', 'settings', 'src', 'lib.rs'), 'utf8');
+    const packageJson = readJson(join(target, 'package.json')) as {
+      scripts: Record<string, string>;
+      devDependencies: Record<string, string>;
+      allowScripts: Record<string, boolean>;
+    };
+    assert.equal(workspace.includes('crates/home'), true);
+    assert.deepEqual(routes.routes.map((route) => route.wasmPath), ['/home.wasm', '/settings.wasm']);
+    assert.equal(home.includes('fui_managed_app!'), true);
+    assert.equal(settings.includes('fui_managed_app!'), true);
+    assert.equal(home.includes('#[no_mangle]'), false);
+    assert.equal(settings.includes('#[no_mangle]'), false);
+    assert.equal(typeof packageJson.scripts['build:wasm:home'], 'string');
+    assert.equal(typeof packageJson.scripts['build:wasm:settings'], 'string');
+    assert.equal(packageJson.scripts['build:wasm:home'], 'tsx scripts/build-wasm.ts home');
+    assert.equal(packageJson.scripts['build:wasm:settings'], 'tsx scripts/build-wasm.ts settings');
+    assert.equal(packageJson.devDependencies.esbuild, '0.28.1');
+    assert.equal(packageJson.allowScripts['esbuild@0.28.1'], true);
+    assert.equal(existsSync(join(target, 'scripts', 'build-wasm.ts')), true);
+    assert.equal(existsSync(join(target, 'src', 'routes.rs')), false);
+    assert.equal(existsSync(join(target, '.gitignore')), true);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
