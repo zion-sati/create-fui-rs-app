@@ -6,7 +6,7 @@ members = [
 resolver = "2"
 
 [workspace.dependencies]
-fui-rs = "0.1.1"
+fui-rs = "0.1.2"
 
 [profile.release]
 opt-level = 3

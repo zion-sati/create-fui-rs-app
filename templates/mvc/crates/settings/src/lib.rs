@@ -1,4 +1,4 @@
-use fui_rs::prelude::*;
+use fui::prelude::*;
 
 struct SettingsPage {
     root: FlexBox,

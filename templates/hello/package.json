@@ -15,7 +15,7 @@
     "test": "npm run build && tsx scripts/smoke.ts"
   },
   "dependencies": {
-    "@effindomv2/runtime": "0.1.22"
+    "@effindomv2/runtime": "0.1.23"
   },
   "devDependencies": {
     "esbuild": "0.28.1",
