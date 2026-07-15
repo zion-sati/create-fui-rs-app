@@ -13,6 +13,10 @@ fui-rs = { path = "node_modules/@effindomv2/fui-rs" }
 [features]
 native-runtime = ["fui-rs/native-runtime"]
 
+[profile.dev]
+debug = 0
+panic = "abort"
+
 [profile.release]
 opt-level = 3
 lto = true

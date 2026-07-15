@@ -13,16 +13,18 @@ mkdirSync('public/runtime', { recursive: true });
 mkdirSync('public/settings', { recursive: true });
 cpSync('node_modules/@effindomv2/runtime/dist', 'public/runtime/dist', { recursive: true });
 copyFileSync('node_modules/@effindomv2/runtime/dist/bridge.js', 'public/bridge.js');
+copyFileSync('favicon.ico', 'public/favicon.ico');
 writeFileSync(
   'public/effindom-runtime-config.js',
   `window.__effindomRuntime = Object.assign({}, window.__effindomRuntime, ${JSON.stringify({
-    manifestUrl: '/runtime/dist/effindom.v2.manifest.json',
     manifestUrls: [cdnManifestUrl, '/runtime/dist/effindom.v2.manifest.json'],
     expectedRuntimeSetHash: runtimeManifest.runtime_set_hash,
     buildMode: 'release',
   })});\n`,
   'utf8',
 );
-const shell = readFileSync('index.html', 'utf8');
+const shell = readFileSync('index.html', 'utf8')
+  .replace('{{LOADING_OVERLAY_STYLES}}', readFileSync('loading-overlay-styles.html', 'utf8'))
+  .replace('{{LOADING_OVERLAY_BODY}}', readFileSync('loading-overlay-body.html', 'utf8'));
 writeFileSync('public/index.html', shell, 'utf8');
 writeFileSync('public/settings/index.html', shell, 'utf8');

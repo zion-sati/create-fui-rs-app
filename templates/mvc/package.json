@@ -6,14 +6,19 @@
   "description": "Scaffolded FUI-RS routed app",
   "scripts": {
     "build": "npm run build:assets && npm run build:wasm && npm run build:harness",
+    "build:dev": "npm run build:assets && npm run build:wasm:dev && npm run build:harness",
     "build:assets": "tsx scripts/prepare-runtime.ts",
     "build:wasm": "npm run build:wasm:home && npm run build:wasm:settings",
-    "build:wasm:home": "tsx scripts/build-wasm.ts home",
-    "build:wasm:settings": "tsx scripts/build-wasm.ts settings",
+    "build:wasm:home": "tsx scripts/build-wasm.ts home --target release",
+    "build:wasm:settings": "tsx scripts/build-wasm.ts settings --target release",
+    "build:wasm:dev": "npm run build:wasm:dev:home && npm run build:wasm:dev:settings",
+    "build:wasm:dev:home": "tsx scripts/build-wasm.ts home --target debug",
+    "build:wasm:dev:settings": "tsx scripts/build-wasm.ts settings --target debug",
     "build:harness": "esbuild harness.ts --bundle --format=esm --platform=browser --loader:.json=json --outfile=public/harness.js",
     "check": "cargo check --workspace",
     "serve": "serve public --listen 8080",
-    "dev": "npm run build && npm run serve",
+    "watch": "chokidar \"crates/**/*.rs\" \"Cargo.toml\" \"crates/**/Cargo.toml\" \"harness.ts\" \"index.html\" \"routes.json\" -c \"npm run build:dev\"",
+    "dev": "npm run build:dev && concurrently -k -n watch,serve \"npm run watch\" \"npm run serve\"",
     "test": "npm run build && tsx scripts/smoke.ts"
   },
   "dependencies": {
@@ -21,6 +26,8 @@
     "@effindomv2/runtime": "__RUNTIME_VERSION__"
   },
   "devDependencies": {
+    "chokidar-cli": "^3.0.0",
+    "concurrently": "^10.0.3",
     "esbuild": "0.28.1",
     "serve": "^14.2.5",
     "tsx": "^4.20.6"

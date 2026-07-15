@@ -1,16 +1,30 @@
 import { spawnSync } from 'node:child_process';
 import { copyFileSync, mkdirSync } from 'node:fs';
 
+function optimizeReleaseWasm(path: string): void {
+  const result = spawnSync('wasm-opt', ['-O3', '--strip-debug', '--strip-producers', path, '-o', path], { stdio: 'inherit' });
+  if (result.error !== undefined && (result.error as NodeJS.ErrnoException).code === 'ENOENT') {
+    console.warn('wasm-opt not found; skipping optional Binaryen release optimization.');
+    return;
+  }
+  if (result.status !== 0) process.exit(result.status ?? 1);
+}
+
 const routeKey = process.argv[2];
+const targetIndex = process.argv.indexOf('--target');
+const target = targetIndex >= 0 ? process.argv[targetIndex + 1] : 'release';
+if (target !== 'debug' && target !== 'release') {
+  throw new Error('--target must be debug or release.');
+}
 const routes = {
   home: {
     packageName: '__PACKAGE_NAME__-home',
-    source: 'target/wasm32-unknown-unknown/release/__CRATE_NAME___home.wasm',
+    crateName: '__CRATE_NAME___home',
     destination: 'public/home.wasm',
   },
   settings: {
     packageName: '__PACKAGE_NAME__-settings',
-    source: 'target/wasm32-unknown-unknown/release/__CRATE_NAME___settings.wasm',
+    crateName: '__CRATE_NAME___settings',
     destination: 'public/settings.wasm',
   },
 } as const;
@@ -20,9 +34,10 @@ if (routeKey !== 'home' && routeKey !== 'settings') {
 }
 
 const route = routes[routeKey];
+const releaseArgs = target === 'release' ? ['--release'] : [];
 const result = spawnSync(
   'cargo',
-  ['build', '--package', route.packageName, '--target', 'wasm32-unknown-unknown', '--release'],
+  ['build', '--package', route.packageName, '--target', 'wasm32-unknown-unknown', ...releaseArgs],
   { stdio: 'inherit' },
 );
 if (result.status !== 0) {
@@ -30,4 +45,5 @@ if (result.status !== 0) {
 }
 
 mkdirSync('public', { recursive: true });
-copyFileSync(route.source, route.destination);
+copyFileSync(`target/wasm32-unknown-unknown/${target}/${route.crateName}.wasm`, route.destination);
+if (target === 'release') optimizeReleaseWasm(route.destination);

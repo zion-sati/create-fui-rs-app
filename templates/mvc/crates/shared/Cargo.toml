@@ -1,0 +1,10 @@
+[package]
+name = "__PACKAGE_NAME__-shared"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "__CRATE_NAME___shared"
+
+[dependencies]
+fui-rs = { workspace = true }

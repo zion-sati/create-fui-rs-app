@@ -9,6 +9,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 fui-rs = { workspace = true }
+__CRATE_NAME___shared = { package = "__PACKAGE_NAME__-shared", path = "../shared" }
 
 [features]
 native-runtime = ["fui-rs/native-runtime"]

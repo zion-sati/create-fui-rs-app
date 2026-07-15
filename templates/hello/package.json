@@ -6,12 +6,15 @@
   "description": "Scaffolded FUI-RS hello-world app",
   "scripts": {
     "build": "npm run build:assets && npm run build:wasm && npm run build:harness",
+    "build:dev": "npm run build:assets && npm run build:wasm:dev && npm run build:harness",
     "build:assets": "tsx scripts/prepare-runtime.ts",
-    "build:wasm": "tsx scripts/build-wasm.ts",
+    "build:wasm": "tsx scripts/build-wasm.ts --target release",
+    "build:wasm:dev": "tsx scripts/build-wasm.ts --target debug",
     "build:harness": "esbuild harness.ts --bundle --format=esm --platform=browser --outfile=public/harness.js",
     "check": "cargo check",
     "serve": "serve public --listen 8080",
-    "dev": "npm run build && npm run serve",
+    "watch": "chokidar \"src/**/*.rs\" \"Cargo.toml\" \"harness.ts\" \"index.html\" -c \"npm run build:dev\"",
+    "dev": "npm run build:dev && concurrently -k -n watch,serve \"npm run watch\" \"npm run serve\"",
     "test": "npm run build && tsx scripts/smoke.ts"
   },
   "dependencies": {
@@ -19,6 +22,8 @@
     "@effindomv2/runtime": "__RUNTIME_VERSION__"
   },
   "devDependencies": {
+    "chokidar-cli": "^3.0.0",
+    "concurrently": "^10.0.3",
     "esbuild": "0.28.1",
     "serve": "^14.2.5",
     "tsx": "^4.20.6"
