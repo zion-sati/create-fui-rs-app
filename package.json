@@ -1,6 +1,6 @@
 {
   "name": "@effindomv2/create-fui-rs-app",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "private": false,
   "license": "MIT",
   "description": "Scaffold a minimal EffinDom v2 FUI-RS app",

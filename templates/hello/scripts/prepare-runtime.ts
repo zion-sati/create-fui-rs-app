@@ -6,7 +6,7 @@ const runtimeManifest = JSON.parse(readFileSync('node_modules/@effindomv2/runtim
 if (typeof runtimeManifest.runtime_set_hash !== 'string' || runtimeManifest.runtime_set_hash.length === 0) {
   throw new Error('Installed EffinDOM runtime does not declare runtime_set_hash.');
 }
-const cdnManifestUrl = `https://runtime.effindom.dev/v2/manifests/${runtimeManifest.runtime_set_hash}.json`;
+const cdnManifestUrl = `https://runtimes.effindom.dev/v2/manifests/${runtimeManifest.runtime_set_hash}.json`;
 
 rmSync('public', { recursive: true, force: true });
 mkdirSync('public/runtime', { recursive: true });
