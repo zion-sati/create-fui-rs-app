@@ -23,30 +23,62 @@ MVC_DIR="${TEMP_DIR}/scaffold-mvc-smoke"
 run_in_dir "${PACKAGE_DIR}" node dist/src/cli.js "${HELLO_DIR}"
 run_in_dir "${PACKAGE_DIR}" node dist/src/cli.js "${MVC_DIR}" --template mvc
 
-if [ -d "${REPO_ROOT}/v2/fui-rs" ] && [ -d "${REPO_ROOT}/v2/browser-bridge" ]; then
-  runtime_tarball_name="$(run_in_dir "${REPO_ROOT}/v2/browser-bridge" npm pack --ignore-scripts --pack-destination "${TEMP_DIR}" | tail -n 1)"
+FUI_RS_PACKAGE_DIR="${FUI_RS_PACKAGE_DIR:-}"
+if [ -z "${FUI_RS_PACKAGE_DIR}" ]; then
+  for candidate in \
+    "${REPO_ROOT}/v2/fui-rs" \
+    "${REPO_ROOT}/../fui-rs/v2/fui-rs" \
+    "${REPO_ROOT}/../FUI-RS/v2/fui-rs"; do
+    if [ -f "${candidate}/package.json" ] && [ -f "${candidate}/Cargo.toml" ]; then
+      FUI_RS_PACKAGE_DIR="${candidate}"
+      break
+    fi
+  done
+fi
+
+RUNTIME_PACKAGE_DIR="${RUNTIME_PACKAGE_DIR:-}"
+if [ -z "${RUNTIME_PACKAGE_DIR}" ]; then
+  for candidate in \
+    "${REPO_ROOT}/v2/browser-bridge" \
+    "${REPO_ROOT}/../EffinDOM/v2/browser-bridge" \
+    "${REPO_ROOT}/../effindom/v2/browser-bridge"; do
+    if [ -f "${candidate}/package.json" ]; then
+      RUNTIME_PACKAGE_DIR="${candidate}"
+      break
+    fi
+  done
+fi
+
+fui_rs_tarball=""
+if [ -n "${FUI_RS_PACKAGE_DIR}" ]; then
+  fui_rs_tarball_name="$(run_in_dir "${FUI_RS_PACKAGE_DIR}" npm pack --ignore-scripts --pack-destination "${TEMP_DIR}" | tail -n 1)"
+  fui_rs_tarball="${TEMP_DIR}/${fui_rs_tarball_name}"
+fi
+
+runtime_tarball=""
+if [ -n "${RUNTIME_PACKAGE_DIR}" ]; then
+  runtime_tarball_name="$(run_in_dir "${RUNTIME_PACKAGE_DIR}" npm pack --ignore-scripts --pack-destination "${TEMP_DIR}" | tail -n 1)"
   runtime_tarball="${TEMP_DIR}/${runtime_tarball_name}"
-  node --input-type=module - "${HELLO_DIR}" "${MVC_DIR}" "${REPO_ROOT}/v2/fui-rs" "${runtime_tarball}" <<'EOF'
+fi
+
+if [ -n "${fui_rs_tarball}" ] || [ -n "${runtime_tarball}" ]; then
+  node --input-type=module - "${HELLO_DIR}" "${MVC_DIR}" "${fui_rs_tarball}" "${runtime_tarball}" <<'EOF'
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-const [helloDir, mvcDir, fuiRsPath, runtimeTarball] = process.argv.slice(2);
-const escapedPath = fuiRsPath.replaceAll('\\', '\\\\');
-const patchCargo = (file, pattern) => {
-  const source = readFileSync(file, 'utf8');
-  const updated = source.replace(pattern, `fui-rs = { path = "${escapedPath}" }`);
-  if (updated === source) throw new Error(`Could not patch ${file}`);
-  writeFileSync(file, updated, 'utf8');
-};
-const patchRuntime = directory => {
+const [helloDir, mvcDir, fuiRsTarball, runtimeTarball] = process.argv.slice(2);
+const patchDependencies = directory => {
   const file = join(directory, 'package.json');
   const manifest = JSON.parse(readFileSync(file, 'utf8'));
-  manifest.dependencies['@effindomv2/runtime'] = `file:${runtimeTarball}`;
+  if (fuiRsTarball.length > 0) {
+    manifest.dependencies['@effindomv2/fui-rs'] = `file:${fuiRsTarball}`;
+  }
+  if (runtimeTarball.length > 0) {
+    manifest.dependencies['@effindomv2/runtime'] = `file:${runtimeTarball}`;
+  }
   writeFileSync(file, `${JSON.stringify(manifest, null, 2)}\n`, 'utf8');
 };
-patchCargo(join(helloDir, 'Cargo.toml'), /fui-rs = "[^"]+"/);
-patchCargo(join(mvcDir, 'Cargo.toml'), /fui-rs = "[^"]+"/);
-patchRuntime(helloDir);
-patchRuntime(mvcDir);
+patchDependencies(helloDir);
+patchDependencies(mvcDir);
 EOF
 fi
 

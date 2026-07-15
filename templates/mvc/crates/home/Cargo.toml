@@ -9,3 +9,6 @@ crate-type = ["cdylib"]
 
 [dependencies]
 fui-rs = { workspace = true }
+
+[features]
+native-runtime = ["fui-rs/native-runtime"]

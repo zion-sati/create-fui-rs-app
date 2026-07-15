@@ -4,6 +4,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
 import { createProject } from '../src/scaffold.js';
+import { FUI_RS_VERSION, RUNTIME_VERSION } from '../src/versions.js';
 
 function readJson(path: string): unknown {
   return JSON.parse(readFileSync(path, 'utf8')) as unknown;
@@ -17,11 +18,15 @@ void test('createProject writes hello scaffold without manual lifecycle exports'
     const cargo = readFileSync(join(target, 'Cargo.toml'), 'utf8');
     const source = readFileSync(join(target, 'src', 'lib.rs'), 'utf8');
     const packageJson = readJson(join(target, 'package.json')) as {
+      dependencies: Record<string, string>;
       scripts: Record<string, string>;
       devDependencies: Record<string, string>;
       allowScripts: Record<string, boolean>;
     };
     assert.equal(cargo.includes('crate-type = ["cdylib"]'), true);
+    assert.equal(cargo.includes('fui-rs = { path = "node_modules/@effindomv2/fui-rs" }'), true);
+    assert.equal(packageJson.dependencies['@effindomv2/fui-rs'], FUI_RS_VERSION);
+    assert.equal(packageJson.dependencies['@effindomv2/runtime'], RUNTIME_VERSION);
     assert.equal(source.includes('fui_app!(FlexBox, build_page);'), true);
     assert.equal(source.includes('#[no_mangle]'), false);
     assert.equal(source.includes('extern "C" fn __runApp'), false);
@@ -46,11 +51,15 @@ void test('createProject writes routed mvc scaffold with separate route wasm cra
     const home = readFileSync(join(target, 'crates', 'home', 'src', 'lib.rs'), 'utf8');
     const settings = readFileSync(join(target, 'crates', 'settings', 'src', 'lib.rs'), 'utf8');
     const packageJson = readJson(join(target, 'package.json')) as {
+      dependencies: Record<string, string>;
       scripts: Record<string, string>;
       devDependencies: Record<string, string>;
       allowScripts: Record<string, boolean>;
     };
     assert.equal(workspace.includes('crates/home'), true);
+    assert.equal(workspace.includes('fui-rs = { path = "node_modules/@effindomv2/fui-rs" }'), true);
+    assert.equal(packageJson.dependencies['@effindomv2/fui-rs'], FUI_RS_VERSION);
+    assert.equal(packageJson.dependencies['@effindomv2/runtime'], RUNTIME_VERSION);
     assert.deepEqual(routes.routes.map((route) => route.wasmPath), ['/home.wasm', '/settings.wasm']);
     assert.equal(home.includes('fui_managed_app!'), true);
     assert.equal(settings.includes('fui_managed_app!'), true);

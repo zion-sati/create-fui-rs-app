@@ -8,7 +8,10 @@ name = "__CRATE_NAME__"
 crate-type = ["cdylib"]
 
 [dependencies]
-fui-rs = "0.1.2"
+fui-rs = { path = "node_modules/@effindomv2/fui-rs" }
+
+[features]
+native-runtime = ["fui-rs/native-runtime"]
 
 [profile.release]
 opt-level = 3

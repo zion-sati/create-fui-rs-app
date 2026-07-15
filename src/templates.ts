@@ -1,6 +1,7 @@
 import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { FUI_RS_VERSION, RUNTIME_VERSION } from './versions.js';
 
 export type TemplateName = 'hello' | 'mvc';
 
@@ -43,7 +44,9 @@ function replaceTemplateTokens(value: string, context: TemplateContext): string 
   return value
     .replaceAll('__PROJECT_NAME__', context.projectName)
     .replaceAll('__PACKAGE_NAME__', context.packageName)
-    .replaceAll('__CRATE_NAME__', context.crateName);
+    .replaceAll('__CRATE_NAME__', context.crateName)
+    .replaceAll('__FUI_RS_VERSION__', FUI_RS_VERSION)
+    .replaceAll('__RUNTIME_VERSION__', RUNTIME_VERSION);
 }
 
 function outputPathForTemplate(filePath: string): string {
