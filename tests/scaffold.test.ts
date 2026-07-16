@@ -77,6 +77,11 @@ void test('createProject writes routed mvc scaffold with separate route wasm cra
     assert.equal(home.includes('fui_component!(HomePage => root)'), true);
     assert.equal(settings.includes('fui_component!(SettingsPage => root)'), true);
     assert.equal(shared.includes('fui_component!(StarterNavBar => root)'), true);
+    assert.equal(home.includes('Host service time:'), true);
+    assert.equal(home.includes('Host event tick:'), true);
+    assert.equal(home.includes('on_app_clock_tick'), true);
+    assert.equal(shared.includes('.font_size(14.0)'), true);
+    assert.equal(shared.includes('theme.colors.accent'), true);
     assert.equal(home.includes('_theme_guard'), false);
     assert.equal(settings.includes('_theme_guard'), false);
     assert.equal(shared.includes('_theme_guard'), false);
@@ -90,11 +95,15 @@ void test('createProject writes routed mvc scaffold with separate route wasm cra
     assert.equal(packageJson.scripts['build:wasm:home'], 'tsx scripts/build-wasm.ts home --target release');
     assert.equal(packageJson.scripts['build:wasm:settings'], 'tsx scripts/build-wasm.ts settings --target release');
     assert.equal(typeof packageJson.scripts['build:dev'], 'string');
+    assert.equal(typeof packageJson.scripts['generate:host'], 'string');
     assert.equal(typeof packageJson.scripts.watch, 'string');
     assert.equal(shell.includes('id="fui-canvas"'), true);
     assert.equal(packageJson.devDependencies.esbuild, '0.28.1');
     assert.equal(packageJson.allowScripts['esbuild@0.28.1'], true);
     assert.equal(existsSync(join(target, 'scripts', 'build-wasm.ts')), true);
+    assert.equal(existsSync(join(target, 'host', 'host-services.ts')), true);
+    assert.equal(existsSync(join(target, 'host', 'host-events.ts')), true);
+    assert.equal(typeof packageJson.scripts['generate:host-events:settings'], 'string');
     assert.equal(existsSync(join(target, 'src', 'routes.rs')), false);
     assert.equal(existsSync(join(target, '.gitignore')), true);
   } finally {

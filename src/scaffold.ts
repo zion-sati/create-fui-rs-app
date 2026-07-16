@@ -124,6 +124,6 @@ export function runCli(argv: readonly string[], cwd: string, logger: LoggerLike)
   logger.log('Next steps:');
   logger.log(`  cd ${requestedPath}`);
   logger.log('  npm install');
-  logger.log('  npm run build');
+  logger.log('  npm run dev');
   return 0;
 }

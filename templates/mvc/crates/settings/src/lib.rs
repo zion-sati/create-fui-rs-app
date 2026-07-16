@@ -1,3 +1,5 @@
+mod generated;
+
 use __CRATE_NAME___shared::{create_nav_bar, primary_button};
 use fui::prelude::*;
 use std::cell::Cell;
@@ -32,7 +34,7 @@ impl SettingsPage {
                 flex_box().height(24.0, Unit::Pixel),
                 text("Settings page").font_size(34.0),
                 flex_box().height(12.0, Unit::Pixel),
-                text("This route is a separate retained Rust application and WASM module.").font_size(16.0),
+                text("This page is a separate MVC slice with its own model and controller.").font_size(16.0),
                 flex_box().height(20.0, Unit::Pixel),
                 status,
                 flex_box().height(16.0, Unit::Pixel),

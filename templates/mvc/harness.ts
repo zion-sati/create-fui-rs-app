@@ -3,6 +3,8 @@ import {
   type RoutedHarnessRoute,
 } from '@effindomv2/runtime/routed-harness';
 import type { HarnessExports } from '@effindomv2/runtime/managed-harness';
+import { appHostEvents } from './host/host-events.js';
+import { appHostServices } from './host/host-services.js';
 import routeManifest from './routes.json' with { type: 'json' };
 
 type RouteExports = HarnessExports & {
@@ -16,6 +18,8 @@ startRoutedHarness<RouteExports>({
   shellId: 'fui-routes',
   routeBase: '/',
   routes,
+  hostEvents: appHostEvents,
+  hostServices: appHostServices,
   recreateRuntimeOnWarmRouteSwap: true,
   run(exports): void {
     exports.__runApp();

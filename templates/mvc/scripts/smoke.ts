@@ -14,6 +14,14 @@ for (const file of [
   accessSync(file);
 }
 
+for (const generatedBinding of [
+  'crates/shared/src/generated/host_services.rs',
+  'crates/home/src/generated/host_events.rs',
+  'crates/settings/src/generated/host_events.rs',
+]) {
+  accessSync(generatedBinding);
+}
+
 for (const shell of ['public/index.html', 'public/settings/index.html']) {
   if (!readFileSync(shell, 'utf8').includes('id="fui-canvas"')) {
     throw new Error(`${shell} is missing #fui-canvas.`);
