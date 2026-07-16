@@ -1,0 +1,15 @@
+[package]
+name = "__PACKAGE_NAME__-settings"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "__CRATE_NAME___settings"
+crate-type = ["cdylib"]
+
+[dependencies]
+fui-rs = { workspace = true }
+__CRATE_NAME___shared = { package = "__PACKAGE_NAME__-shared", path = "../../shared" }
+
+[features]
+native-runtime = ["fui-rs/native-runtime"]
