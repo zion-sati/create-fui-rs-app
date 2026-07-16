@@ -1,9 +1,5 @@
 [workspace]
-members = [
-  "crates/shared",
-  "crates/home",
-  "crates/settings"
-]
+members = ["crates/shared", "crates/routes/*"]
 resolver = "2"
 
 [workspace.dependencies]

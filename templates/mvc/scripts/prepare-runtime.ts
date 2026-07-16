@@ -7,10 +7,14 @@ if (typeof runtimeManifest.runtime_set_hash !== 'string' || runtimeManifest.runt
   throw new Error('Installed EffinDOM runtime does not declare runtime_set_hash.');
 }
 const cdnManifestUrl = `https://runtimes.effindom.dev/v2/manifests/${runtimeManifest.runtime_set_hash}.json`;
+const routeManifest = JSON.parse(readFileSync('routes.json', 'utf8')) as { routes: Array<{ routePath: string }> };
 
 rmSync('public', { recursive: true, force: true });
 mkdirSync('public/runtime', { recursive: true });
-mkdirSync('public/settings', { recursive: true });
+for (const route of routeManifest.routes) {
+  const directory = route.routePath.replace(/^\//, '').replace(/\/$/, '');
+  if (directory.length > 0) mkdirSync(`public/${directory}`, { recursive: true });
+}
 cpSync('node_modules/@effindomv2/runtime/dist', 'public/runtime/dist', { recursive: true });
 copyFileSync('node_modules/@effindomv2/runtime/dist/bridge.js', 'public/bridge.js');
 copyFileSync('favicon.ico', 'public/favicon.ico');
@@ -27,4 +31,7 @@ const shell = readFileSync('index.html', 'utf8')
   .replace('{{LOADING_OVERLAY_STYLES}}', readFileSync('loading-overlay-styles.html', 'utf8'))
   .replace('{{LOADING_OVERLAY_BODY}}', readFileSync('loading-overlay-body.html', 'utf8'));
 writeFileSync('public/index.html', shell, 'utf8');
-writeFileSync('public/settings/index.html', shell, 'utf8');
+for (const route of routeManifest.routes) {
+  const directory = route.routePath.replace(/^\//, '').replace(/\/$/, '');
+  writeFileSync(directory.length === 0 ? 'public/index.html' : `public/${directory}/index.html`, shell, 'utf8');
+}

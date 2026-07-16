@@ -9,3 +9,10 @@ npm install
 npm run build
 npm run dev
 ```
+
+## Add a route
+
+1. Add `crates/routes/<route-key>/Cargo.toml` and `src/lib.rs` using the existing route crates as examples.
+2. Add one entry to `routes.json`.
+
+The Cargo workspace discovers route crates from `crates/routes/*`. The build, host-event generation, and route-shell staging scripts all derive their work from `routes.json`; no package-script or build-script registration is required.

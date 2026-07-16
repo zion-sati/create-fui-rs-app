@@ -16,8 +16,8 @@ for (const file of [
 
 for (const generatedBinding of [
   'crates/shared/src/generated/host_services.rs',
-  'crates/home/src/generated/host_events.rs',
-  'crates/settings/src/generated/host_events.rs',
+  'crates/routes/home/src/generated/host_events.rs',
+  'crates/routes/settings/src/generated/host_events.rs',
 ]) {
   accessSync(generatedBinding);
 }

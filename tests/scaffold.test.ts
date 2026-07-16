@@ -56,8 +56,8 @@ void test('createProject writes routed mvc scaffold with separate route wasm cra
     createProject({ targetDirectory: target, projectName: 'my-routed-app', template: 'mvc' });
     const workspace = readFileSync(join(target, 'Cargo.toml'), 'utf8');
     const routes = readJson(join(target, 'routes.json')) as { routes: { wasmPath: string }[] };
-    const home = readFileSync(join(target, 'crates', 'home', 'src', 'lib.rs'), 'utf8');
-    const settings = readFileSync(join(target, 'crates', 'settings', 'src', 'lib.rs'), 'utf8');
+    const home = readFileSync(join(target, 'crates', 'routes', 'home', 'src', 'lib.rs'), 'utf8');
+    const settings = readFileSync(join(target, 'crates', 'routes', 'settings', 'src', 'lib.rs'), 'utf8');
     const shared = readFileSync(join(target, 'crates', 'shared', 'src', 'lib.rs'), 'utf8');
     const shell = readFileSync(join(target, 'index.html'), 'utf8');
     const packageJson = readJson(join(target, 'package.json')) as {
@@ -66,8 +66,7 @@ void test('createProject writes routed mvc scaffold with separate route wasm cra
       devDependencies: Record<string, string>;
       allowScripts: Record<string, boolean>;
     };
-    assert.equal(workspace.includes('crates/home'), true);
-    assert.equal(workspace.includes('crates/shared'), true);
+    assert.equal(workspace.includes('"crates/routes/*"'), true);
     assert.equal(workspace.includes('fui-rs = { path = "node_modules/@effindomv2/fui-rs" }'), true);
     assert.equal(packageJson.dependencies['@effindomv2/fui-rs'], FUI_RS_VERSION);
     assert.equal(packageJson.dependencies['@effindomv2/runtime'], RUNTIME_VERSION);
@@ -90,10 +89,7 @@ void test('createProject writes routed mvc scaffold with separate route wasm cra
     assert.equal(existsSync(join(target, 'crates', 'shared', 'src', 'lib.rs')), true);
     assert.equal(home.includes('#[no_mangle]'), false);
     assert.equal(settings.includes('#[no_mangle]'), false);
-    assert.equal(typeof packageJson.scripts['build:wasm:home'], 'string');
-    assert.equal(typeof packageJson.scripts['build:wasm:settings'], 'string');
-    assert.equal(packageJson.scripts['build:wasm:home'], 'tsx scripts/build-wasm.ts home --target release');
-    assert.equal(packageJson.scripts['build:wasm:settings'], 'tsx scripts/build-wasm.ts settings --target release');
+    assert.equal(packageJson.scripts['build:wasm'], 'tsx scripts/build-wasm.ts --all --target release');
     assert.equal(typeof packageJson.scripts['build:dev'], 'string');
     assert.equal(typeof packageJson.scripts['generate:host'], 'string');
     assert.equal(typeof packageJson.scripts.watch, 'string');
@@ -103,7 +99,8 @@ void test('createProject writes routed mvc scaffold with separate route wasm cra
     assert.equal(existsSync(join(target, 'scripts', 'build-wasm.ts')), true);
     assert.equal(existsSync(join(target, 'host', 'host-services.ts')), true);
     assert.equal(existsSync(join(target, 'host', 'host-events.ts')), true);
-    assert.equal(typeof packageJson.scripts['generate:host-events:settings'], 'string');
+    assert.equal(packageJson.scripts['generate:host-events'], 'tsx scripts/generate-route-host-events.ts');
+    assert.equal(existsSync(join(target, 'scripts', 'generate-route-host-events.ts')), true);
     assert.equal(existsSync(join(target, 'src', 'routes.rs')), false);
     assert.equal(existsSync(join(target, '.gitignore')), true);
   } finally {
