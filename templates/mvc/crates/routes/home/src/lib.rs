@@ -9,9 +9,10 @@ use std::rc::Rc;
 #[derive(Clone)]
 struct HomePage {
     root: SelectionArea,
+    host_event_subscriptions: Rc<Vec<HostEventSubscription>>,
 }
 
-fui_component!(HomePage => root);
+fui_component!(HomePage => root, owner: host_event_subscriptions);
 
 impl HomePage {
     fn new() -> Self {
@@ -25,7 +26,7 @@ impl HomePage {
         .font_size(15.0)
         .clone();
         let host_event = text("Host event tick: -").font_size(15.0).clone();
-        generated::host_events::on_app_clock_tick({
+        let host_event_subscription = generated::host_events::on_app_clock_tick({
             let host_event = host_event.clone();
             move |value| {
                 host_event.text(format!("Host event tick: {}", value));
@@ -67,17 +68,15 @@ impl HomePage {
         root.fill_size().child(&content).bind_theme(|root, theme| {
             root.bg_color(theme.colors.background);
         });
-        Self { root }
+        Self {
+            root,
+            host_event_subscriptions: Rc::new(vec![host_event_subscription]),
+        }
     }
-}
-
-fn dispose_home_page(_: &HomePage) {
-    generated::host_events::clear_app_clock_tick();
 }
 
 fui_managed_app!(
     HomePage,
     HomePage::new,
-    |page: &HomePage| page.clone(),
-    dispose: dispose_home_page
+    |page: &HomePage| page.clone()
 );

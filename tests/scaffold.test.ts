@@ -76,7 +76,8 @@ void test('createProject writes routed mvc scaffold with separate route wasm cra
     assert.deepEqual(routes.routes.map((route) => route.wasmPath), ['/home.wasm', '/settings.wasm']);
     assert.equal(home.includes('fui_managed_app!'), true);
     assert.equal(settings.includes('fui_managed_app!'), true);
-    assert.equal(home.includes('fui_component!(HomePage => root)'), true);
+    assert.equal(home.includes('fui_component!(HomePage => root, owner: host_event_subscriptions)'), true);
+    assert.equal(home.includes('Rc<Vec<HostEventSubscription>>'), true);
     assert.equal(settings.includes('fui_component!(SettingsPage => root)'), true);
     assert.equal(shared.includes('fui_component!(StarterNavBar => root)'), true);
     assert.equal(home.includes('Host service time:'), true);
