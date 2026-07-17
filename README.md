@@ -21,11 +21,11 @@ npm install
 npm run dev
 ```
 
-For the MVC starter with routing:
+For the routed starter:
 
 ```bash
-npx @effindomv2/create-fui-rs-app my-mvc-app -- --template mvc
-cd my-mvc-app
+npx @effindomv2/create-fui-rs-app my-routed-app -- --template routed
+cd my-routed-app
 npm install
 npm run dev
 ```
@@ -36,7 +36,7 @@ npm run dev
 
 - **`hello` template** (default) — single-page minimal Rust app using
   `fui_app!`, with harness and dev server.
-- **`mvc` template** — two-page routed app with separate Rust route crates,
+- **`routed` template** — two-page routed app with separate Rust route crates,
   separate route WASM outputs, route metadata, and `fui_managed_app!`.
 - Rust compilation to WebAssembly with wasm-bindgen-free SDK lifecycle exports.
 - `dev`, `build`, and `test` scripts with app bundling.

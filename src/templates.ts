@@ -3,7 +3,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { FUI_RS_VERSION, RUNTIME_VERSION } from './versions.js';
 
-export type TemplateName = 'hello' | 'mvc';
+export type TemplateName = 'hello' | 'routed';
 
 export interface TemplateContext {
   readonly projectName: string;

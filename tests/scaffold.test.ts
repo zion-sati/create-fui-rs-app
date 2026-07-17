@@ -52,11 +52,11 @@ void test('createProject writes hello scaffold without manual lifecycle exports'
   }
 });
 
-void test('createProject writes routed mvc scaffold with separate route wasm crates', () => {
+void test('createProject writes routed scaffold with separate route wasm crates', () => {
   const root = mkdtempSync(join(tmpdir(), 'create-fui-rs-app-'));
   const target = join(root, 'my-routed-app');
   try {
-    createProject({ targetDirectory: target, projectName: 'my-routed-app', template: 'mvc' });
+    createProject({ targetDirectory: target, projectName: 'my-routed-app', template: 'routed' });
     const workspace = readFileSync(join(target, 'Cargo.toml'), 'utf8');
     const routes = readJson(join(target, 'routes.json')) as { routes: { wasmPath: string }[] };
     const home = readFileSync(join(target, 'crates', 'routes', 'home', 'src', 'lib.rs'), 'utf8');

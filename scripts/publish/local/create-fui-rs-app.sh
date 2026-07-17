@@ -19,9 +19,9 @@ run_in_dir "${PACKAGE_DIR}" npm test
 run_in_dir "${PACKAGE_DIR}" npm pack --dry-run >/dev/null
 
 HELLO_DIR="${TEMP_DIR}/scaffold-smoke"
-MVC_DIR="${TEMP_DIR}/scaffold-mvc-smoke"
+ROUTED_DIR="${TEMP_DIR}/scaffold-routed-smoke"
 run_in_dir "${PACKAGE_DIR}" node dist/src/cli.js "${HELLO_DIR}"
-run_in_dir "${PACKAGE_DIR}" node dist/src/cli.js "${MVC_DIR}" --template mvc
+run_in_dir "${PACKAGE_DIR}" node dist/src/cli.js "${ROUTED_DIR}" --template routed
 
 FUI_RS_PACKAGE_DIR="${FUI_RS_PACKAGE_DIR:-}"
 if [ -z "${FUI_RS_PACKAGE_DIR}" ]; then
@@ -62,10 +62,10 @@ if [ -n "${RUNTIME_PACKAGE_DIR}" ]; then
 fi
 
 if [ -n "${fui_rs_tarball}" ] || [ -n "${runtime_tarball}" ]; then
-  node --input-type=module - "${HELLO_DIR}" "${MVC_DIR}" "${fui_rs_tarball}" "${runtime_tarball}" <<'EOF'
+  node --input-type=module - "${HELLO_DIR}" "${ROUTED_DIR}" "${fui_rs_tarball}" "${runtime_tarball}" <<'EOF'
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-const [helloDir, mvcDir, fuiRsTarball, runtimeTarball] = process.argv.slice(2);
+const [helloDir, routedDir, fuiRsTarball, runtimeTarball] = process.argv.slice(2);
 const patchDependencies = directory => {
   const file = join(directory, 'package.json');
   const manifest = JSON.parse(readFileSync(file, 'utf8'));
@@ -78,7 +78,7 @@ const patchDependencies = directory => {
   writeFileSync(file, `${JSON.stringify(manifest, null, 2)}\n`, 'utf8');
 };
 patchDependencies(helloDir);
-patchDependencies(mvcDir);
+patchDependencies(routedDir);
 EOF
 fi
 
@@ -87,7 +87,7 @@ run_in_dir "${HELLO_DIR}" npm install --silent
 run_in_dir "${HELLO_DIR}" npm audit --audit-level=low
 run_in_dir "${HELLO_DIR}" npm test
 
-log_step "Running scaffolded FUI-RS MVC app smoke build"
-run_in_dir "${MVC_DIR}" npm install --silent
-run_in_dir "${MVC_DIR}" npm audit --audit-level=low
-run_in_dir "${MVC_DIR}" npm test
+log_step "Running scaffolded FUI-RS routed app smoke build"
+run_in_dir "${ROUTED_DIR}" npm install --silent
+run_in_dir "${ROUTED_DIR}" npm audit --audit-level=low
+run_in_dir "${ROUTED_DIR}" npm test

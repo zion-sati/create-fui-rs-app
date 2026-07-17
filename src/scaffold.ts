@@ -63,9 +63,9 @@ function parseCliOptions(argv: readonly string[]): ParsedCliOptions {
     if (argument === '--template') {
       const value = argv.at(index + 1);
       if (value === undefined) {
-        return { requestedPath, template, error: '--template requires a value (hello or mvc).' };
+        return { requestedPath, template, error: '--template requires a value (hello or routed).' };
       }
-      if (value !== 'hello' && value !== 'mvc') {
+      if (value !== 'hello' && value !== 'routed') {
         return { requestedPath, template, error: `Unsupported template: ${value}` };
       }
       template = value;
@@ -74,7 +74,7 @@ function parseCliOptions(argv: readonly string[]): ParsedCliOptions {
     }
     if (argument.startsWith('--template=')) {
       const value = argument.slice('--template='.length);
-      if (value !== 'hello' && value !== 'mvc') {
+      if (value !== 'hello' && value !== 'routed') {
         return { requestedPath, template, error: `Unsupported template: ${value}` };
       }
       template = value;
@@ -93,7 +93,7 @@ function parseCliOptions(argv: readonly string[]): ParsedCliOptions {
 }
 
 function printUsage(logger: LoggerLike): void {
-  logger.error('Usage: create-fui-rs-app <project-directory> [--template hello|mvc]');
+  logger.error('Usage: create-fui-rs-app <project-directory> [--template hello|routed]');
 }
 
 export function runCli(argv: readonly string[], cwd: string, logger: LoggerLike): number {
