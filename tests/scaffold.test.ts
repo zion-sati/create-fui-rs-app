@@ -39,10 +39,13 @@ void test('createProject writes hello scaffold without manual lifecycle exports'
     assert.equal(packageJson.scripts['build:wasm'], 'tsx scripts/build-wasm.ts --target release');
     assert.equal(typeof packageJson.scripts['build:dev'], 'string');
     assert.equal(typeof packageJson.scripts.watch, 'string');
+    assert.equal(packageJson.scripts.publish, 'npm run build && npm run publish:stage');
+    assert.equal(packageJson.scripts['publish:stage'], 'tsx scripts/stage-publish.ts');
     assert.equal(shell.includes('id="fui-canvas"'), true);
     assert.equal(packageJson.devDependencies.esbuild, '0.28.1');
     assert.equal(packageJson.allowScripts['esbuild@0.28.1'], true);
     assert.equal(existsSync(join(target, 'scripts', 'build-wasm.ts')), true);
+    assert.equal(existsSync(join(target, 'scripts', 'stage-publish.ts')), true);
     assert.equal(existsSync(join(target, '.gitignore')), true);
   } finally {
     rmSync(root, { recursive: true, force: true });
@@ -93,10 +96,13 @@ void test('createProject writes routed mvc scaffold with separate route wasm cra
     assert.equal(typeof packageJson.scripts['build:dev'], 'string');
     assert.equal(typeof packageJson.scripts['generate:host'], 'string');
     assert.equal(typeof packageJson.scripts.watch, 'string');
+    assert.equal(packageJson.scripts.publish, 'npm run build && npm run publish:stage');
+    assert.equal(packageJson.scripts['publish:stage'], 'tsx scripts/stage-publish.ts');
     assert.equal(shell.includes('id="fui-canvas"'), true);
     assert.equal(packageJson.devDependencies.esbuild, '0.28.1');
     assert.equal(packageJson.allowScripts['esbuild@0.28.1'], true);
     assert.equal(existsSync(join(target, 'scripts', 'build-wasm.ts')), true);
+    assert.equal(existsSync(join(target, 'scripts', 'stage-publish.ts')), true);
     assert.equal(existsSync(join(target, 'host', 'host-services.ts')), true);
     assert.equal(existsSync(join(target, 'host', 'host-events.ts')), true);
     assert.equal(packageJson.scripts['generate:host-events'], 'tsx scripts/generate-route-host-events.ts');

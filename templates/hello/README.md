@@ -9,3 +9,9 @@ npm install
 npm run build
 npm run dev
 ```
+
+Create an optimized static deployment in `published/`:
+
+```sh
+npm run publish
+```

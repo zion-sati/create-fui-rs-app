@@ -18,7 +18,9 @@
     "serve": "serve public --listen 8080",
     "watch": "chokidar \"crates/**/*.rs\" \"host/**/*.ts\" \"Cargo.toml\" \"crates/**/Cargo.toml\" \"harness.ts\" \"index.html\" \"routes.json\" --ignore \"crates/**/src/generated/**\" -c \"npm run build:dev\"",
     "dev": "npm run build:dev && concurrently -k -n watch,serve \"npm run watch\" \"npm run serve\"",
-    "test": "npm run build && tsx scripts/smoke.ts"
+    "test": "npm run build && tsx scripts/smoke.ts",
+    "publish": "npm run build && npm run publish:stage",
+    "publish:stage": "tsx scripts/stage-publish.ts"
   },
   "dependencies": {
     "@effindomv2/fui-rs": "__FUI_RS_VERSION__",

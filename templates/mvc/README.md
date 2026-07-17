@@ -10,6 +10,12 @@ npm run build
 npm run dev
 ```
 
+Create an optimized static deployment in `published/`:
+
+```sh
+npm run publish
+```
+
 ## Add a route
 
 1. Add `crates/routes/<route-key>/Cargo.toml` and `src/lib.rs` using the existing route crates as examples.
