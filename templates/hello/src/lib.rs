@@ -11,6 +11,7 @@ fui_component!(HelloWorld => root);
 
 impl HelloWorld {
     fn new() -> Self {
+        Application::caption("__PROJECT_NAME__");
         use_system_theme();
 
         let counter = Rc::new(Cell::new(0_i32));

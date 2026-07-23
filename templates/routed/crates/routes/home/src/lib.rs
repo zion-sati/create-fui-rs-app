@@ -16,6 +16,7 @@ fui_component!(HomePage => root, owner: host_event_subscriptions);
 
 impl HomePage {
     fn new() -> Self {
+        Application::caption("__PROJECT_NAME__ • Home");
         use_system_theme();
         let nav_bar = create_nav_bar(true);
         let status = text("Home counter: 0").font_size(18.0).clone();

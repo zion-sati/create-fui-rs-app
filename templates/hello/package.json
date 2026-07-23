@@ -25,7 +25,7 @@
   },
   "devDependencies": {
     "chokidar-cli": "^3.0.0",
-    "concurrently": "^10.0.3",
+    "concurrently": "9.2.4",
     "esbuild": "0.28.1",
     "serve": "^14.2.5",
     "tsx": "^4.20.6"

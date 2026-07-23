@@ -14,6 +14,7 @@ fui_component!(SettingsPage => root);
 
 impl SettingsPage {
     fn new() -> Self {
+        Application::caption("__PROJECT_NAME__ • Settings");
         use_system_theme();
         let nav_bar = create_nav_bar(false);
         let status = text("Settings saved: 0").font_size(18.0).clone();

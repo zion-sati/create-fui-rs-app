@@ -18,6 +18,7 @@ void test('createProject writes hello scaffold without manual lifecycle exports'
     const cargo = readFileSync(join(target, 'Cargo.toml'), 'utf8');
     const source = readFileSync(join(target, 'src', 'lib.rs'), 'utf8');
     const shell = readFileSync(join(target, 'index.html'), 'utf8');
+    const loadingOverlay = readFileSync(join(target, 'loading-overlay-body.html'), 'utf8');
     const packageJson = readJson(join(target, 'package.json')) as {
       dependencies: Record<string, string>;
       scripts: Record<string, string>;
@@ -29,6 +30,7 @@ void test('createProject writes hello scaffold without manual lifecycle exports'
     assert.equal(packageJson.dependencies['@effindomv2/fui-rs'], FUI_RS_VERSION);
     assert.equal(packageJson.dependencies['@effindomv2/runtime'], RUNTIME_VERSION);
     assert.equal(source.includes('fui_managed_app!(HelloWorld'), true);
+    assert.equal(source.includes('Application::caption("my-rust-app")'), true);
     assert.equal(source.includes('button("Click me")'), true);
     assert.equal(source.includes('bind_theme'), true);
     assert.equal(source.includes('fui_component!(HelloWorld => root)'), true);
@@ -42,6 +44,11 @@ void test('createProject writes hello scaffold without manual lifecycle exports'
     assert.equal(packageJson.scripts.publish, 'npm run build && npm run publish:stage');
     assert.equal(packageJson.scripts['publish:stage'], 'tsx scripts/stage-publish.ts');
     assert.equal(shell.includes('id="fui-canvas"'), true);
+    assert.equal(loadingOverlay.includes('data-effindom-loading-visual'), true);
+    assert.equal(loadingOverlay.includes('__effindomLoadingBootstrap'), true);
+    assert.equal(loadingOverlay.includes('Runtime assets'), true);
+    assert.equal(loadingOverlay.includes('effindom-loading-progress'), true);
+    assert.equal(readFileSync(join(target, 'loading-overlay-styles.html'), 'utf8').includes('user-select: none'), true);
     assert.equal(packageJson.devDependencies.esbuild, '0.28.1');
     assert.equal(packageJson.allowScripts['esbuild@0.28.1'], true);
     assert.equal(existsSync(join(target, 'scripts', 'build-wasm.ts')), true);
@@ -63,6 +70,7 @@ void test('createProject writes routed scaffold with separate route wasm crates'
     const settings = readFileSync(join(target, 'crates', 'routes', 'settings', 'src', 'lib.rs'), 'utf8');
     const shared = readFileSync(join(target, 'crates', 'shared', 'src', 'lib.rs'), 'utf8');
     const shell = readFileSync(join(target, 'index.html'), 'utf8');
+    const loadingOverlay = readFileSync(join(target, 'loading-overlay-body.html'), 'utf8');
     const packageJson = readJson(join(target, 'package.json')) as {
       dependencies: Record<string, string>;
       scripts: Record<string, string>;
@@ -76,6 +84,8 @@ void test('createProject writes routed scaffold with separate route wasm crates'
     assert.deepEqual(routes.routes.map((route) => route.wasmPath), ['/home.wasm', '/settings.wasm']);
     assert.equal(home.includes('fui_managed_app!'), true);
     assert.equal(settings.includes('fui_managed_app!'), true);
+    assert.equal(home.includes('Application::caption("my-routed-app • Home")'), true);
+    assert.equal(settings.includes('Application::caption("my-routed-app • Settings")'), true);
     assert.equal(home.includes('fui_component!(HomePage => root, owner: host_event_subscriptions)'), true);
     assert.equal(home.includes('Rc<Vec<HostEventSubscription>>'), true);
     assert.equal(settings.includes('fui_component!(SettingsPage => root)'), true);
@@ -100,6 +110,11 @@ void test('createProject writes routed scaffold with separate route wasm crates'
     assert.equal(packageJson.scripts.publish, 'npm run build && npm run publish:stage');
     assert.equal(packageJson.scripts['publish:stage'], 'tsx scripts/stage-publish.ts');
     assert.equal(shell.includes('id="fui-canvas"'), true);
+    assert.equal(loadingOverlay.includes('data-effindom-loading-visual'), true);
+    assert.equal(loadingOverlay.includes('__effindomLoadingBootstrap'), true);
+    assert.equal(loadingOverlay.includes('Runtime assets'), true);
+    assert.equal(loadingOverlay.includes('effindom-loading-progress'), true);
+    assert.equal(readFileSync(join(target, 'loading-overlay-styles.html'), 'utf8').includes('user-select: none'), true);
     assert.equal(packageJson.devDependencies.esbuild, '0.28.1');
     assert.equal(packageJson.allowScripts['esbuild@0.28.1'], true);
     assert.equal(existsSync(join(target, 'scripts', 'build-wasm.ts')), true);

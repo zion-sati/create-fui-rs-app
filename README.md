@@ -1,5 +1,9 @@
 # EffinDom create-fui-rs-app
 
+[![create-fui-rs-app CI](https://github.com/zion-sati/create-fui-rs-app/actions/workflows/create-fui-rs-app-ci.yml/badge.svg)](https://github.com/zion-sati/create-fui-rs-app/actions/workflows/create-fui-rs-app-ci.yml)
+[![npm](https://img.shields.io/npm/v/@effindomv2/create-fui-rs-app?label=create-fui-rs-app)](https://www.npmjs.com/package/@effindomv2/create-fui-rs-app)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE.md)
+
 > **`npx` scaffolder for FUI-RS apps. One command to a running EffinDom
 > application.**
 

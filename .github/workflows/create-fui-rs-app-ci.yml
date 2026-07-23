@@ -1,0 +1,80 @@
+name: create-fui-rs-app CI
+
+on:
+  push:
+    branches: [main]
+    paths: &ci_inputs
+      - '.github/workflows/create-fui-rs-app-ci.yml'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'tsconfig.json'
+      - 'eslint.config.ts'
+      - 'README.md'
+      - 'LICENSE.md'
+      - 'src/**'
+      - 'templates/**'
+      - 'tests/**'
+      - 'scripts/ci/**'
+      - 'scripts/publish/**'
+  pull_request:
+    paths: *ci_inputs
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - name: Resolve current FUI-RS and compatible runtime releases
+        id: releases
+        run: |
+          fui_version="$(npm view @effindomv2/fui-rs dist-tags.latest)"
+          runtime_version="$(npm view "@effindomv2/fui-rs@$fui_version" dependencies.@effindomv2/runtime)"
+          node -e "if (!/^\\d+\\.\\d+\\.\\d+(?:-[0-9A-Za-z.-]+)?$/.test(process.argv[1])) process.exit(1)" "$fui_version"
+          node -e "if (!/^\\d+\\.\\d+\\.\\d+(?:-[0-9A-Za-z.-]+)?$/.test(process.argv[1])) process.exit(1)" "$runtime_version"
+          echo "fui_version=$fui_version" >> "$GITHUB_OUTPUT"
+          echo "runtime_version=$runtime_version" >> "$GITHUB_OUTPUT"
+      - name: Pin tested scaffold dependencies
+        env:
+          FUI_VERSION: ${{ steps.releases.outputs.fui_version }}
+          RUNTIME_VERSION: ${{ steps.releases.outputs.runtime_version }}
+        run: |
+          node - <<'NODE'
+          const fs = require('node:fs');
+          fs.writeFileSync('src/versions.ts', `export const FUI_RS_VERSION = '${process.env.FUI_VERSION}';\nexport const RUNTIME_VERSION = '${process.env.RUNTIME_VERSION}';\n`);
+          NODE
+      - name: Install dependencies
+        run: npm ci
+      - name: Test package and generated applications
+        run: npm run publish:local
+      - name: Record tested release inputs
+        env:
+          FUI_VERSION: ${{ steps.releases.outputs.fui_version }}
+          RUNTIME_VERSION: ${{ steps.releases.outputs.runtime_version }}
+        run: |
+          mkdir -p .release-inputs
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const inputs = {
+            fuiVersion: process.env.FUI_VERSION,
+            runtimeVersion: process.env.RUNTIME_VERSION,
+          };
+          fs.writeFileSync('.release-inputs/release-inputs.json', `${JSON.stringify(inputs, null, 2)}\n`);
+          NODE
+      - name: Upload create-fui-rs-app release inputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: create-fui-rs-app-release-inputs
+          path: .release-inputs/release-inputs.json
+          if-no-files-found: error
+          retention-days: 90

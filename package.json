@@ -4,6 +4,23 @@
   "private": false,
   "license": "MIT",
   "description": "Scaffold a minimal EffinDom v2 FUI-RS app",
+  "keywords": [
+    "effindom",
+    "fui-rs",
+    "rust",
+    "webassembly",
+    "wasm",
+    "ui",
+    "scaffolder"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zion-sati/create-fui-rs-app.git"
+  },
+  "homepage": "https://github.com/zion-sati/create-fui-rs-app#readme",
+  "bugs": {
+    "url": "https://github.com/zion-sati/create-fui-rs-app/issues"
+  },
   "engines": {
     "node": ">=18"
   },

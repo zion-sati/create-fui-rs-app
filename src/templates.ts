@@ -13,6 +13,8 @@ export interface TemplateContext {
 
 const TEMPLATE_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', 'templates');
 const BINARY_TEMPLATE_FILES = new Set<string>(['favicon.ico']);
+const SHARED_LOADING_OVERLAY_STYLES = readFileSync(resolve(TEMPLATE_ROOT, 'loading-overlay-styles.html'), 'utf8');
+const SHARED_LOADING_OVERLAY_BODY = readFileSync(resolve(TEMPLATE_ROOT, 'loading-overlay-body.html'), 'utf8');
 
 function collectTemplateFiles(root: string, relativePath = ''): Map<string, string> {
   const absolutePath = resolve(root, relativePath);
@@ -56,6 +58,8 @@ function outputPathForTemplate(filePath: string): string {
 export function createTemplateFiles(template: TemplateName, context: TemplateContext): Map<string, string> {
   const files = collectTemplateFiles(resolve(TEMPLATE_ROOT, template));
   const output = new Map<string, string>();
+  output.set('loading-overlay-styles.html', SHARED_LOADING_OVERLAY_STYLES);
+  output.set('loading-overlay-body.html', SHARED_LOADING_OVERLAY_BODY);
   for (const [filePath, contents] of files) {
     output.set(outputPathForTemplate(filePath), replaceTemplateTokens(contents, context));
   }
