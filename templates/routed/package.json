@@ -15,7 +15,7 @@
     "generate:host-events": "tsx scripts/generate-route-host-events.ts",
     "generate:host": "npm run generate:host-services && npm run generate:host-events",
     "check": "cargo check --workspace",
-    "serve": "serve public --listen 8080",
+    "serve": "sirv public --dev --host 0.0.0.0 --port 8080",
     "watch": "chokidar \"crates/**/*.rs\" \"host/**/*.ts\" \"Cargo.toml\" \"crates/**/Cargo.toml\" \"harness.ts\" \"index.html\" \"routes.json\" --ignore \"crates/**/src/generated/**\" -c \"npm run build:dev\"",
     "dev": "npm run build:dev && concurrently -k -n watch,serve \"npm run watch\" \"npm run serve\"",
     "test": "npm run build && tsx scripts/smoke.ts",
@@ -30,7 +30,7 @@
     "chokidar-cli": "^3.0.0",
     "concurrently": "9.2.4",
     "esbuild": "0.28.1",
-    "serve": "^14.2.5",
+    "sirv-cli": "3.0.1",
     "tsx": "^4.20.6"
   },
   "allowScripts": {

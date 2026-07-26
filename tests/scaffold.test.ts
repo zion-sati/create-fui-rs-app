@@ -41,6 +41,8 @@ void test('createProject writes hello scaffold without manual lifecycle exports'
     assert.equal(packageJson.scripts['build:wasm'], 'tsx scripts/build-wasm.ts --target release');
     assert.equal(typeof packageJson.scripts['build:dev'], 'string');
     assert.equal(typeof packageJson.scripts.watch, 'string');
+    assert.equal(packageJson.scripts.serve, 'sirv public --dev --host 0.0.0.0 --port 8080');
+    assert.equal(packageJson.devDependencies['sirv-cli'], '3.0.1');
     assert.equal(packageJson.scripts.publish, 'npm run build && npm run publish:stage');
     assert.equal(packageJson.scripts['publish:stage'], 'tsx scripts/stage-publish.ts');
     assert.equal(shell.includes('id="fui-canvas"'), true);
@@ -107,6 +109,8 @@ void test('createProject writes routed scaffold with separate route wasm crates'
     assert.equal(typeof packageJson.scripts['build:dev'], 'string');
     assert.equal(typeof packageJson.scripts['generate:host'], 'string');
     assert.equal(typeof packageJson.scripts.watch, 'string');
+    assert.equal(packageJson.scripts.serve, 'sirv public --dev --host 0.0.0.0 --port 8080');
+    assert.equal(packageJson.devDependencies['sirv-cli'], '3.0.1');
     assert.equal(packageJson.scripts.publish, 'npm run build && npm run publish:stage');
     assert.equal(packageJson.scripts['publish:stage'], 'tsx scripts/stage-publish.ts');
     assert.equal(shell.includes('id="fui-canvas"'), true);
