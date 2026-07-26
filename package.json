@@ -44,6 +44,7 @@
     "templates"
   ],
   "scripts": {
+    "update:upstream": "node scripts/update-upstream-versions.mjs",
     "build": "tsc -p tsconfig.json",
     "lint": "bash -lc 'if [ -x node_modules/.bin/eslint ]; then node --experimental-strip-types ./node_modules/eslint/bin/eslint.js --config eslint.config.ts --max-warnings=0 \"src/**/*.ts\" \"tests/**/*.ts\"; elif [ -x ../../node_modules/.bin/eslint ]; then node --experimental-strip-types ../../node_modules/eslint/bin/eslint.js --config eslint.config.ts --max-warnings=0 \"src/**/*.ts\" \"tests/**/*.ts\"; else echo \"Could not locate eslint in node_modules/.bin.\" >&2; exit 1; fi'",
     "typecheck": "tsc -p tsconfig.json --noEmit",

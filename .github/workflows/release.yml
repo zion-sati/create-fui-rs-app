@@ -45,7 +45,6 @@ jobs:
       contents: read
     outputs:
       ci_run_id: ${{ steps.attestation.outputs.ci_run_id }}
-      release_inputs_run_id: ${{ steps.attestation.outputs.release_inputs_run_id }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -80,25 +79,15 @@ jobs:
           node-version: 24
           registry-url: https://registry.npmjs.org
           package-manager-cache: false
-      - name: Download tested dependency pins
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-          ARTIFACT_RUN_ID: ${{ needs.verify_ci.outputs.release_inputs_run_id }}
-        run: |
-          mkdir -p .release-inputs
-          gh run download "$ARTIFACT_RUN_ID" --repo "$GITHUB_REPOSITORY" --name create-fui-rs-app-release-inputs --dir .release-inputs
-          test -f .release-inputs/release-inputs.json
-      - name: Stamp package and tested dependency versions
+      - name: Stamp package version
         env:
           RELEASE_VERSION: ${{ needs.validate.outputs.release_version }}
         run: |
           node - <<'NODE'
           const fs = require('node:fs');
-          const inputs = JSON.parse(fs.readFileSync('.release-inputs/release-inputs.json', 'utf8'));
           const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
           packageJson.version = process.env.RELEASE_VERSION;
           fs.writeFileSync('package.json', `${JSON.stringify(packageJson, null, 2)}\n`);
-          fs.writeFileSync('src/versions.ts', `export const FUI_RS_VERSION = '${inputs.fuiVersion}';\nexport const RUNTIME_VERSION = '${inputs.runtimeVersion}';\n`);
           NODE
       - name: Install package build dependencies
         run: npm ci
@@ -129,8 +118,8 @@ jobs:
           fi
       - name: Report release
         run: |
-          fui_version="$(node -p "require('./.release-inputs/release-inputs.json').fuiVersion")"
-          runtime_version="$(node -p "require('./.release-inputs/release-inputs.json').runtimeVersion")"
+          fui_version="$(sed -n "s/^export const FUI_RS_VERSION = '\([^']*\)';$/\1/p" src/versions.ts)"
+          runtime_version="$(sed -n "s/^export const RUNTIME_VERSION = '\([^']*\)';$/\1/p" src/versions.ts)"
           {
             echo '## create-fui-rs-app released'
             echo
