@@ -12,7 +12,7 @@ struct HomePage {
     host_event_subscriptions: Rc<Vec<HostEventSubscription>>,
 }
 
-fui_component!(HomePage => root, owner: host_event_subscriptions);
+fui_component!(HomePage => root);
 
 impl HomePage {
     fn new() -> Self {
@@ -76,8 +76,4 @@ impl HomePage {
     }
 }
 
-fui_managed_app!(
-    HomePage,
-    HomePage::new,
-    |page: &HomePage| page.clone()
-);
+fui_app!(HomePage, HomePage::new);

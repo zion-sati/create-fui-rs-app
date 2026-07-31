@@ -29,7 +29,7 @@ void test('createProject writes hello scaffold without manual lifecycle exports'
     assert.equal(cargo.includes('fui-rs = { path = "node_modules/@effindomv2/fui-rs" }'), true);
     assert.equal(packageJson.dependencies['@effindomv2/fui-rs'], FUI_RS_VERSION);
     assert.equal(packageJson.dependencies['@effindomv2/runtime'], RUNTIME_VERSION);
-    assert.equal(source.includes('fui_managed_app!(HelloWorld'), true);
+    assert.equal(source.includes('fui_app!(HelloWorld, HelloWorld::new)'), true);
     assert.equal(source.includes('Application::caption("my-rust-app")'), true);
     assert.equal(source.includes('button("Click me")'), true);
     assert.equal(source.includes('bind_theme'), true);
@@ -84,11 +84,11 @@ void test('createProject writes routed scaffold with separate route wasm crates'
     assert.equal(packageJson.dependencies['@effindomv2/fui-rs'], FUI_RS_VERSION);
     assert.equal(packageJson.dependencies['@effindomv2/runtime'], RUNTIME_VERSION);
     assert.deepEqual(routes.routes.map((route) => route.wasmPath), ['/home.wasm', '/settings.wasm']);
-    assert.equal(home.includes('fui_managed_app!'), true);
-    assert.equal(settings.includes('fui_managed_app!'), true);
+    assert.equal(home.includes('fui_app!(HomePage, HomePage::new)'), true);
+    assert.equal(settings.includes('fui_app!(SettingsPage, SettingsPage::new)'), true);
     assert.equal(home.includes('Application::caption("my-routed-app • Home")'), true);
     assert.equal(settings.includes('Application::caption("my-routed-app • Settings")'), true);
-    assert.equal(home.includes('fui_component!(HomePage => root, owner: host_event_subscriptions)'), true);
+    assert.equal(home.includes('fui_component!(HomePage => root);'), true);
     assert.equal(home.includes('Rc<Vec<HostEventSubscription>>'), true);
     assert.equal(settings.includes('fui_component!(SettingsPage => root)'), true);
     assert.equal(shared.includes('fui_component!(StarterNavBar => root)'), true);

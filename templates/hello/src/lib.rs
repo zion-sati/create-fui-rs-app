@@ -64,4 +64,4 @@ impl HelloWorld {
     }
 }
 
-fui_managed_app!(HelloWorld, HelloWorld::new, |page: &HelloWorld| page.clone());
+fui_app!(HelloWorld, HelloWorld::new);

@@ -50,4 +50,4 @@ impl SettingsPage {
     }
 }
 
-fui_managed_app!(SettingsPage, SettingsPage::new, |page: &SettingsPage| page.clone());
+fui_app!(SettingsPage, SettingsPage::new);

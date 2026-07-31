@@ -41,7 +41,8 @@ npm run dev
 - **`hello` template** (default) — single-page minimal Rust app using
   `fui_app!`, with harness and dev server.
 - **`routed` template** — two-page routed app with separate Rust route crates,
-  separate route WASM outputs, route metadata, and `fui_managed_app!`.
+  separate route WASM outputs, route metadata, and retained `fui_app!` page
+  objects.
 - Rust compilation to WebAssembly with wasm-bindgen-free SDK lifecycle exports.
 - `dev`, `build`, and `test` scripts with app bundling.
 
