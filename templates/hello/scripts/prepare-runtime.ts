@@ -1,4 +1,7 @@
 import { copyFileSync, cpSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { createFuiConfigBootstrapScript, parseFuiConfig } from '@effindomv2/runtime/fui-config';
+
+const fuiConfig = parseFuiConfig(JSON.parse(readFileSync('fui-config.json', 'utf8')) as unknown);
 
 const runtimeManifest = JSON.parse(readFileSync('node_modules/@effindomv2/runtime/dist/effindom.v2.manifest.json', 'utf8')) as {
   runtime_set_hash?: string;
@@ -15,10 +18,11 @@ copyFileSync('node_modules/@effindomv2/runtime/dist/bridge.js', 'public/bridge.j
 copyFileSync('favicon.ico', 'public/favicon.ico');
 writeFileSync(
   'public/effindom-runtime-config.js',
-  `window.__effindomRuntime = Object.assign({}, window.__effindomRuntime, ${JSON.stringify({
+  `${createFuiConfigBootstrapScript(fuiConfig)}window.__effindomRuntime = Object.assign({}, window.__effindomRuntime, ${JSON.stringify({
     manifestUrls: [cdnManifestUrl, './runtime/dist/effindom.v2.manifest.json'],
     expectedRuntimeSetHash: runtimeManifest.runtime_set_hash,
     buildMode: 'release',
+    ...(fuiConfig.web?.devTools?.domMirror === undefined ? {} : { devToolsDomMirror: fuiConfig.web.devTools.domMirror }),
   })});\n`,
   'utf8',
 );
@@ -26,6 +30,12 @@ writeFileSync(
   'public/index.html',
   readFileSync('index.html', 'utf8')
     .replace('{{LOADING_OVERLAY_STYLES}}', readFileSync('loading-overlay-styles.html', 'utf8'))
-    .replace('{{LOADING_OVERLAY_BODY}}', readFileSync('loading-overlay-body.html', 'utf8')),
+    .replace(
+      '{{LOADING_OVERLAY_BODY}}',
+      readFileSync('loading-overlay-body.html', 'utf8').replace(
+        '__FUI_LOADING_DELAY_MS__',
+        String(fuiConfig.web?.loading?.delayMs ?? 300),
+      ),
+    ),
   'utf8',
 );

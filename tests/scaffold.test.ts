@@ -19,6 +19,7 @@ void test('createProject writes hello scaffold without manual lifecycle exports'
     const source = readFileSync(join(target, 'src', 'lib.rs'), 'utf8');
     const shell = readFileSync(join(target, 'index.html'), 'utf8');
     const loadingOverlay = readFileSync(join(target, 'loading-overlay-body.html'), 'utf8');
+    assert.equal((readJson(join(target, 'fui-config.json')) as { version: number }).version, 1);
     const packageJson = readJson(join(target, 'package.json')) as {
       dependencies: Record<string, string>;
       scripts: Record<string, string>;
@@ -73,6 +74,7 @@ void test('createProject writes routed scaffold with separate route wasm crates'
     const shared = readFileSync(join(target, 'crates', 'shared', 'src', 'lib.rs'), 'utf8');
     const shell = readFileSync(join(target, 'index.html'), 'utf8');
     const loadingOverlay = readFileSync(join(target, 'loading-overlay-body.html'), 'utf8');
+    assert.equal((readJson(join(target, 'fui-config.json')) as { version: number }).version, 1);
     const packageJson = readJson(join(target, 'package.json')) as {
       dependencies: Record<string, string>;
       scripts: Record<string, string>;
