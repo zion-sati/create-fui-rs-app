@@ -9,7 +9,7 @@ use std::rc::Rc;
 #[derive(Clone)]
 struct HomePage {
     root: SelectionArea,
-    host_event_subscriptions: Rc<Vec<HostEventSubscription>>,
+    _host_event_subscriptions: Rc<Vec<HostEventSubscription>>,
 }
 
 fui_component!(HomePage => root);
@@ -71,7 +71,7 @@ impl HomePage {
         });
         Self {
             root,
-            host_event_subscriptions: Rc::new(vec![host_event_subscription]),
+            _host_event_subscriptions: Rc::new(vec![host_event_subscription]),
         }
     }
 }
