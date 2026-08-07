@@ -1,2 +1,2 @@
-export const FUI_RS_VERSION = '0.2.14';
-export const RUNTIME_VERSION = '0.2.12';
+export const FUI_RS_VERSION = '0.2.15';
+export const RUNTIME_VERSION = '0.2.13';
