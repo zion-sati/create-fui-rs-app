@@ -10,16 +10,48 @@ pub struct StarterNavBar {
 fui_component!(StarterNavBar => root);
 
 pub fn create_nav_bar(home_is_active: bool) -> StarterNavBar {
+    let home_label = text("Home");
+    home_label.selectable(false);
     let home_link = nav_link("/");
     home_link
-        .text("Home")
         .corner_radius(999.0)
         .padding(16.0, 8.0, 16.0, 8.0);
+    home_link.child(&home_label).semantic_label("Home");
+
+    let settings_label = text("Settings");
+    settings_label.selectable(false);
     let settings_link = nav_link("/settings/");
     settings_link
-        .text("Settings")
         .corner_radius(999.0)
         .padding(16.0, 8.0, 16.0, 8.0);
+    settings_link
+        .child(&settings_label)
+        .semantic_label("Settings");
+
+    home_link.bind_interaction_state({
+        let home_label = home_label.clone();
+        move |state, theme| {
+            home_label.text_color(if home_is_active {
+                theme.colors.text_on_accent
+            } else if state.hovered || state.pressed {
+                theme.colors.accent_hovered
+            } else {
+                theme.colors.text_muted
+            });
+        }
+    });
+    settings_link.bind_interaction_state({
+        let settings_label = settings_label.clone();
+        move |state, theme| {
+            settings_label.text_color(if !home_is_active {
+                theme.colors.text_on_accent
+            } else if state.hovered || state.pressed {
+                theme.colors.accent_hovered
+            } else {
+                theme.colors.text_muted
+            });
+        }
+    });
 
     let root = ui! {
         row()
@@ -34,29 +66,31 @@ pub fn create_nav_bar(home_is_active: bool) -> StarterNavBar {
     root.bind_theme({
         let home_link = home_link.clone();
         let settings_link = settings_link.clone();
+        let home_label = home_label.clone();
+        let settings_label = settings_label.clone();
         move |_root, theme| {
             home_link
                 .bg_color(if home_is_active {
                     theme.colors.accent
                 } else {
                     theme.colors.surface
-                })
-                .text_color(if home_is_active {
-                    theme.colors.text_primary
-                } else {
-                    theme.colors.text_muted
                 });
+            home_label.text_color(if home_is_active {
+                theme.colors.text_on_accent
+            } else {
+                theme.colors.text_muted
+            });
             settings_link
                 .bg_color(if home_is_active {
                     theme.colors.surface
                 } else {
                     theme.colors.accent
-                })
-                .text_color(if home_is_active {
-                    theme.colors.text_muted
-                } else {
-                    theme.colors.text_primary
                 });
+            settings_label.text_color(if home_is_active {
+                theme.colors.text_muted
+            } else {
+                theme.colors.text_on_accent
+            });
         }
     });
     StarterNavBar { root }
