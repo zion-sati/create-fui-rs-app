@@ -86,6 +86,8 @@ void test('createProject writes routed scaffold with separate route wasm crates'
     assert.equal(packageJson.dependencies['@effindomv2/fui-rs'], FUI_RS_VERSION);
     assert.equal(packageJson.dependencies['@effindomv2/runtime'], RUNTIME_VERSION);
     assert.deepEqual(routes.routes.map((route) => route.wasmPath), ['/home.wasm', '/settings.wasm']);
+    assert.equal(new Set(routes.routes.map((route) => route.wasmPath)).size, routes.routes.length);
+    assert.equal(routes.routes.some((route) => route.wasmPath === '/app.wasm'), false);
     assert.equal(home.includes('fui_app!(HomePage, HomePage::new)'), true);
     assert.equal(settings.includes('fui_app!(SettingsPage, SettingsPage::new)'), true);
     assert.equal(home.includes('Application::caption("my-routed-app • Home")'), true);
@@ -125,6 +127,7 @@ void test('createProject writes routed scaffold with separate route wasm crates'
     assert.equal(packageJson.allowScripts['esbuild@0.28.1'], true);
     assert.equal(existsSync(join(target, 'scripts', 'build-wasm.ts')), true);
     assert.equal(existsSync(join(target, 'scripts', 'stage-publish.ts')), true);
+    assert.equal(readFileSync(join(target, 'scripts', 'smoke.ts'), 'utf8').includes('public/app.wasm'), true);
     assert.equal(existsSync(join(target, 'host', 'host-services.ts')), true);
     assert.equal(existsSync(join(target, 'host', 'host-events.ts')), true);
     assert.equal(packageJson.scripts['generate:host-events'], 'tsx scripts/generate-route-host-events.ts');
