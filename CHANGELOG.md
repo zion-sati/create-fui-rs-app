@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.1 - 2026-11-03
+
+- Updated verified upstream dependency pins.
+
 ## 0.4.0 - 2026-11-03
 
 - create-fui-as-app and create-fui-rs-app print their usage and exit successfully for --help and -h, instead of reporting an unknown option.
