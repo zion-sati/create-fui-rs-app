@@ -1,12 +1,15 @@
 import { spawnSync } from 'node:child_process';
 import { copyFileSync, mkdirSync } from 'node:fs';
 
+// The browser downloads a route's WebAssembly before the route starts, so release modules are optimized for size with
+// the pinned Binaryen and stripped of the names, toolchain record and feature list the browser never reads.
 function optimizeReleaseWasm(path: string): void {
-  const result = spawnSync('wasm-opt', ['-O3', '--strip-debug', '--strip-producers', path, '-o', path], { stdio: 'inherit' });
-  if (result.error !== undefined && (result.error as NodeJS.ErrnoException).code === 'ENOENT') {
-    console.warn('wasm-opt not found; skipping optional Binaryen release optimization.');
-    return;
-  }
+  const wasmOpt = 'node_modules/binaryen/bin/wasm-opt';
+  const result = spawnSync(
+    process.execPath,
+    [wasmOpt, path, '-Oz', '--strip-debug', '--strip-producers', '--strip-target-features', '-o', path],
+    { stdio: 'inherit' },
+  );
   if (result.status !== 0) process.exit(result.status ?? 1);
 }
 

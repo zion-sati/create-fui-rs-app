@@ -92,11 +92,18 @@ function parseCliOptions(argv: readonly string[]): ParsedCliOptions {
   return { requestedPath, template, error: null };
 }
 
+const USAGE = 'Usage: create-fui-rs-app <project-directory> [--template hello|routed]';
+
 function printUsage(logger: LoggerLike): void {
-  logger.error('Usage: create-fui-rs-app <project-directory> [--template hello|routed]');
+  logger.error(USAGE);
 }
 
 export function runCli(argv: readonly string[], cwd: string, logger: LoggerLike): number {
+  if (argv.includes('--help') || argv.includes('-h')) {
+    logger.log(USAGE);
+    return 0;
+  }
+
   const parsed = parseCliOptions(argv);
   if (parsed.error !== null) {
     logger.error(parsed.error);

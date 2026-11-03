@@ -24,6 +24,7 @@
     "@effindomv2/runtime": "__RUNTIME_VERSION__"
   },
   "devDependencies": {
+    "binaryen": "132.0.0",
     "chokidar-cli": "^3.0.0",
     "concurrently": "9.2.5",
     "esbuild": "0.28.1",

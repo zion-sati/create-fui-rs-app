@@ -3,7 +3,7 @@ import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
-import { createProject } from '../src/scaffold.js';
+import { createProject, runCli } from '../src/scaffold.js';
 import { FUI_RS_VERSION, RUNTIME_VERSION } from '../src/versions.js';
 
 function readJson(path: string): unknown {
@@ -134,6 +134,38 @@ void test('createProject writes routed scaffold with separate route wasm crates'
     assert.equal(existsSync(join(target, 'scripts', 'generate-route-host-events.ts')), true);
     assert.equal(existsSync(join(target, 'src', 'routes.rs')), false);
     assert.equal(existsSync(join(target, '.gitignore')), true);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+void test('--help and -h print the usage and succeed', () => {
+  for (const flag of ['--help', '-h']) {
+    const logged: string[] = [];
+    const errors: string[] = [];
+    const code = runCli([flag], tmpdir(), { log: (message) => logged.push(message), error: (message) => errors.push(message) });
+    assert.equal(code, 0);
+    assert.deepEqual(errors, []);
+    assert.equal(logged.length, 1);
+    assert.match(logged[0] ?? '', /^Usage: create-fui-rs-app <project-directory>/);
+  }
+});
+
+void test('release WebAssembly is built and optimized for size in both templates', () => {
+  const root = mkdtempSync(join(tmpdir(), 'create-fui-rs-app-'));
+  try {
+    for (const template of ['hello', 'routed'] as const) {
+      const target = join(root, template);
+      createProject({ targetDirectory: target, projectName: template, template });
+      const cargo = readFileSync(join(target, 'Cargo.toml'), 'utf8');
+      const packageJson = readJson(join(target, 'package.json')) as { devDependencies: Record<string, string> };
+      const buildWasm = readFileSync(join(target, 'scripts', 'build-wasm.ts'), 'utf8');
+      assert.match(cargo, /\[profile\.release\]\nopt-level = "z"\n/u, template);
+      assert.doesNotMatch(cargo, /^strip\b/mu, template);
+      assert.equal(packageJson.devDependencies.binaryen, '132.0.0', template);
+      assert.equal(buildWasm.includes("'node_modules/binaryen/bin/wasm-opt'"), true, template);
+      assert.equal(buildWasm.includes("'-Oz', '--strip-debug', '--strip-producers', '--strip-target-features'"), true, template);
+    }
   } finally {
     rmSync(root, { recursive: true, force: true });
   }
